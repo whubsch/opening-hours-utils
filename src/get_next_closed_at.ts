@@ -79,7 +79,7 @@ export default function getNextClosedAt(
    * closing times. So, we can be sure that all HourGroups have a 'to' property.
    */
 
-  if (openingHoursString === '24/7') {
+  if (openingHoursString === '24/7' || openingHoursString === 'open') {
     return null;
   }
 
