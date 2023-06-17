@@ -17,23 +17,24 @@ import {
   overrideWithDifferentHours,
   overrideWithOff,
   incompleteString1,
+  spaces,
 } from '../test_data';
 
 describe('getDailyOpeningHours()', () => {
   it.each`
-    input                                 | expectedResult
-    ${openOnWeekdays.string}              | ${openOnWeekdays.dailyArray}
-    ${openOnMondaysAndWednesdays.string}  | ${openOnMondaysAndWednesdays.dailyArray}
-    ${multipleOpeningIntervals.string}    | ${multipleOpeningIntervals.dailyArray}
-    ${multipleOpeningIntervals.altString} | ${multipleOpeningIntervals.dailyArray}
-    ${openOnSaturday.string}              | ${openOnSaturday.dailyArray}
-    ${openOnWeekends.string}              | ${openOnWeekends.dailyArray}
-    ${openFridayToTuesday.string}         | ${openFridayToTuesday.dailyArray}
-    ${openNonStop.string}                 | ${openNonStop.dailyArray}
-    ${openNonStopOnWeekends.string}       | ${openNonStopOnWeekends.dailyArray}
-    ${unspecifiedClosingTime.string}      | ${unspecifiedClosingTime.dailyArray}
-    ${overrideWithDifferentHours.string}  | ${overrideWithDifferentHours.dailyArray}
-    ${overrideWithOff.string}             | ${overrideWithOff.dailyArray}
+    input                                | expectedResult
+    ${openOnWeekdays.string}             | ${openOnWeekdays.dailyArray}
+    ${openOnMondaysAndWednesdays.string} | ${openOnMondaysAndWednesdays.dailyArray}
+    ${multipleOpeningIntervals.string}   | ${multipleOpeningIntervals.dailyArray}
+    ${openOnSaturday.string}             | ${openOnSaturday.dailyArray}
+    ${openOnWeekends.string}             | ${openOnWeekends.dailyArray}
+    ${openFridayToTuesday.string}        | ${openFridayToTuesday.dailyArray}
+    ${openNonStop.string}                | ${openNonStop.dailyArray}
+    ${openNonStopOnWeekends.string}      | ${openNonStopOnWeekends.dailyArray}
+    ${unspecifiedClosingTime.string}     | ${unspecifiedClosingTime.dailyArray}
+    ${overrideWithDifferentHours.string} | ${overrideWithDifferentHours.dailyArray}
+    ${overrideWithOff.string}            | ${overrideWithOff.dailyArray}
+    ${spaces.string}                     | ${spaces.dailyArray}
   `('returns proper object given $input', ({ input, expectedResult }) => {
     const result = getDailyOpeningHours(input);
 

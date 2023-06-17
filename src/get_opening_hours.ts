@@ -47,7 +47,7 @@ function getOpeningHours(openingHoursString: string): OpeningHoursArray | null {
       string | undefined,
     ];
 
-    const weekdayRanges = joinedWeekdayRanges.split(',');
+    const weekdayRanges = joinedWeekdayRanges.split(/,\s*/);
 
     weekdayRanges.forEach((weekdayRange) => {
       const [fromWeekday, toWeekday = fromWeekday] = weekdayRange.split('-');
