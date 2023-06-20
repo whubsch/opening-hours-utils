@@ -2,6 +2,8 @@ import getDailyOpeningHours from './get_daily_opening_hours';
 import getIsOpenAt from './get_is_open_at';
 
 import {
+  addMinutes,
+  getDayDiff,
   getHourGroups,
   getMinutesFromMidnightFromDate,
   getMinutesFromMidnightFromString,
@@ -39,12 +41,23 @@ function groupDaysByDaysToOpening(dayGroups: DayGroups, day: Weekday) {
   return groupedDays;
 }
 
-export default function getNextOpenAt(openingHoursString: string, date: Date): string | null {
+export function getNextOpenAt(openingHoursString: string, date: Date, returnDate: true): Date;
+export function getNextOpenAt(
+  openingHoursString: string,
+  date: Date,
+  returnDate: false,
+): string | null;
+export default function getNextOpenAt(
+  openingHoursString: string,
+  date: Date,
+  returnDate = false,
+): Date | string | null {
+  const newDate = new Date(date.getTime()); // deep copy of Date needed to pass recursion
   if (typeof openingHoursString === 'undefined' || openingHoursString === null) {
     throw new Error('openingHoursString is required');
   }
 
-  if (!date) {
+  if (!newDate) {
     throw new Error('date is required');
   }
 
@@ -52,17 +65,17 @@ export default function getNextOpenAt(openingHoursString: string, date: Date): s
     return null;
   }
 
-  const isOpenAt = getIsOpenAt(openingHoursString, date);
+  const isOpenAt = getIsOpenAt(openingHoursString, newDate);
 
   // If open or unspecified closing time, return null.
   if (isOpenAt !== false) {
     return null;
   }
 
-  const dailyOpeningHoursArray = getDailyOpeningHours(openingHoursString);
+  const dailyOpeningHoursArray = getDailyOpeningHours(openingHoursString, true);
 
-  const day = date.getDay() as Weekday;
-  const minutesFromMidnight = getMinutesFromMidnightFromDate(date);
+  const day = newDate.getDay() as Weekday;
+  const minutesFromMidnight = getMinutesFromMidnightFromDate(newDate);
 
   const daysSortedByDaysToOpening = groupDaysByDaysToOpening(dailyOpeningHoursArray, day);
 
@@ -85,7 +98,13 @@ export default function getNextOpenAt(openingHoursString: string, date: Date): s
     const isToday = day === dayGroupDay;
 
     for (const hourGroup of sortedHourGroups) {
-      if (!isToday || getMinutesToOpening(hourGroup, minutesFromMidnight) > 0 || letFirstGroup) {
+      const minutesToOpen = getMinutesToOpening(hourGroup, minutesFromMidnight);
+      if (!isToday || minutesToOpen > 0 || letFirstGroup) {
+        if (returnDate) {
+          const dayDiff = getDayDiff(day, dayGroupDay);
+          newDate.setDate(newDate.getDate() + dayDiff);
+          return addMinutes(newDate, minutesToOpen);
+        }
         return `${getWeekdayName(dayGroupDay)} ${hourGroup.from}`;
       }
     }
@@ -93,7 +112,6 @@ export default function getNextOpenAt(openingHoursString: string, date: Date): s
 
   for (const dayGroups of daysSortedByDaysToOpening.values()) {
     const nextOpenAt = checkDayGroups(dayGroups);
-
     if (nextOpenAt) {
       return nextOpenAt;
     }
