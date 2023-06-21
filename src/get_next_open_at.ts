@@ -52,7 +52,6 @@ export default function getNextOpenAt(
   date: Date,
   returnDate = false,
 ): Date | string | null {
-  const newDate = new Date(date.getTime()); // deep copy of Date needed to pass recursion
   if (typeof openingHoursString === 'undefined' || openingHoursString === null) {
     throw new Error('openingHoursString is required');
   }
@@ -97,6 +96,7 @@ export default function getNextOpenAt(
 
     const isToday = day === dayGroupDay;
 
+    const newDate = new Date(date.getTime()); // deep copy of Date needed to pass recursion
     for (const hourGroup of sortedHourGroups) {
       const minutesToOpen = getMinutesToOpening(hourGroup, minutesFromMidnight);
       if (!isToday || minutesToOpen > 0 || letFirstGroup) {
